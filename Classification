@@ -1,0 +1,27 @@
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+import joblib
+
+# Пример обучающих данных
+emails = ["Привет, как дела?", "Вы выиграли миллион долларов!", "Встречаемся завтра в офисе.", "Срочно! Получите кредит сейчас!"]
+labels = [0, 1, 0, 1]  # 0 - не спам, 1 - спам
+
+# Преобразование текстов в числовые векторы
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(emails)
+
+# Обучение модели
+model = MultinomialNB()
+model.fit(X, labels)
+
+# Сохранение модели и векторизатора
+joblib.dump(model, "spam_classifier.pkl")
+joblib.dump(vectorizer, "vectorizer.pkl")
+
+# Функция для предсказания спама
+def is_spam(email_content):
+    model = joblib.load("spam_classifier.pkl")
+    vectorizer = joblib.load("vectorizer.pkl")
+    email_vector = vectorizer.transform([email_content])
+    prediction = model.predict(email_vector)
+    return prediction[0] == 1
