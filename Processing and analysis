@@ -1,0 +1,15 @@
+def get_email_content(msg):
+    if msg.is_multipart():
+        for part in msg.walk():
+            content_type = part.get_content_type()
+            content_disposition = str(part.get("Content-Disposition"))
+            if "attachment" not in content_disposition:
+                try:
+                    body = part.get_payload(decode=True).decode()
+                    return body
+                except:
+                    pass
+    else:
+        body = msg.get_payload(decode=True).decode()
+        return body
+    return ""
