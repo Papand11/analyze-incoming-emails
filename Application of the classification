@@ -1,0 +1,14 @@
+for email_id in email_ids[-10:]:
+    status, msg_data = mail.fetch(email_id, "(RFC822)")
+    for response_part in msg_data:
+        if isinstance(response_part, tuple):
+            msg = email.message_from_bytes(response_part[1])
+            subject, encoding = decode_header(msg["Subject"])[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding if encoding else "utf-8")
+            from_ = msg.get("From")
+            content = get_email_content(msg)
+            if is_spam(content):
+                print(f"СПАМ!\nFrom: {from_}\nSubject: {subject}\n")
+            else:
+                print(f"Не спам\nFrom: {from_}\nSubject: {subject}\n")
